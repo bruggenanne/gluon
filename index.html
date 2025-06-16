@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌐 Gluon Reality Check Quiz</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .question {
+      background: white;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .score-options label {
+      display: block;
+      margin: 0.3rem 0;
+    }
+    .tooltip {
+      cursor: help;
+      border-bottom: 1px dotted #333;
+    }
+    button {
+      display: block;
+      margin: 2rem auto;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌐 Gluon Reality Check Quiz</h1>
+  <form id="quiz-form"></form>
+  <button onclick="calculateScore()">Check Reality</button>
+  <div id="result" class="result"></div>
+
+  <script>
+    const questions = [
+      {
+        title: "1. Problem Worth Weaving",
+        tooltip: "Is this project dealing with a genuinely complex, systemic problem that cannot be solved by one perspective alone?",
+        redFlag: "If the problem has a pre-decided solution, you’re being brought in to decorate the process.",
+        options: [
+          "1 – Solvable by a single team. Dressed up as systemic to win funding.",
+          "3 – Complex aspects, but overly narrow framing. Integration feels optional.",
+          "5 – Truly systemic: messy, multilayered, context-dependent."
+        ]
+      },
+      {
+        title: "2. Collective Time is Designed, Not Wished For",
+        tooltip: "Is there real, structured time for collaborative work and shared thinking?",
+        redFlag: "If you have to squeeze in integration between deliverables, it will remain cosmetic.",
+        options: [
+          "1 – One kickoff meeting. Everything else in silos.",
+          "3 – Some working groups, but integration is side activity.",
+          "5 – Protected, repeated spaces for joint reflection and synthesis."
+        ]
+      },
+      {
+        title: "3. Gluon Power & Process Ownership",
+        tooltip: "Do you have meaningful influence over how the work is shaped and delivered?",
+        redFlag: "If they call you a facilitator but only want you to schedule and note, run.",
+        options: [
+          "1 – No authority. All emotional labor.",
+          "3 – Can raise concerns, but no decision-making power.",
+          "5 – Co-design process and shape outputs."
+        ]
+      },
+      {
+        title: "4. Authentic Stakeholder Involvement",
+        tooltip: "Are the right people truly participating—not just watching?",
+        redFlag: "If no one risks changing assumptions, it’s performance art.",
+        options: [
+          "1 – One token participant. No decision power.",
+          "3 – Stakeholders attend but don’t shape agenda.",
+          "5 – Stakeholders co-designed and co-steer the project."
+        ]
+      },
+      {
+        title: "5. Integration Is a Purpose, Not a Buzzword",
+        tooltip: "Is integration central to the project’s design, not an afterthought?",
+        redFlag: "If transdisciplinary shows up in the proposal but not the meetings... branding.",
+        options: [
+          "1 – Separate deliverables. No compromise or translation.",
+          "3 – Integration goal exists, but no clear methods or ownership.",
+          "5 – Baked into methods, outputs, authorship, and impact."
+        ]
+      },
+      {
+        title: "6. Structural & Institutional Backing",
+        tooltip: "Is the system supporting this kind of work with time, budget, leadership?",
+        redFlag: "If no one will back you when timelines clash, you’re alone.",
+        options: [
+          "1 – Pretends to support collaboration, but lacks real backing.",
+          "3 – Rhetorical support; rigid structures.",
+          "5 – Funded, supported, and institutionally protected."
+        ]
+      },
+      {
+        title: "7. Produces Useful, Shared Outputs",
+        tooltip: "Will this produce something usable by multiple audiences?",
+        redFlag: "If outputs are determined before integration, you’re filling in blanks.",
+        options: [
+          "1 – Glossy report. Looks good, means nothing.",
+          "3 – Fragmented useful things emerge.",
+          "5 – Co-designed, usable, accessible for many."
+        ]
+      },
+      {
+        title: "8. Clarity of Integration Purpose",
+        tooltip: "Is the purpose of integration clearly defined and shared?",
+        redFlag: "If people think integration means magically agreeing, fantasy camp.",
+        options: [
+          "1 – Vague: ‘foster synergies’ with no shared goal.",
+          "3 – Purpose stated, but interpreted differently.",
+          "5 – Clear, shared purpose guiding decisions."
+        ]
+      },
+      {
+        title: "9. Epistemic Humility Present",
+        tooltip: "Are people willing to question their own frameworks?",
+        redFlag: "If someone says 'That’s not how we do things in...', run.",
+        options: [
+          "1 – Each discipline thinks it’s the real science.",
+          "3 – Some openness, but defensiveness persists.",
+          "5 – Active reflection and mutual adaptation."
+        ]
+      },
+      {
+        title: "10. Emotional & Relational Safety",
+        tooltip: "Is the space safe for disagreement and vulnerability?",
+        redFlag: "If everyone agrees all the time, no one is talking.",
+        options: [
+          "1 – Status dynamics. People pretend certainty.",
+          "3 – Polite but cautious. No depth yet.",
+          "5 – Disagreement welcomed. Vulnerability modeled."
+        ]
+      },
+      {
+        title: "11. Real Interdependence",
+        tooltip: "Do the project parts rely on each other to succeed?",
+        redFlag: "If the Gantt chart is parallel lanes—you’re racing, not integrating.",
+        options: [
+          "1 – Work packages are fully independent.",
+          "3 – Some overlap, but still optional integration.",
+          "5 – Interlinked parts; can’t remove anyone without collapse."
+        ]
+      },
+      {
+        title: "12. Reflexivity is Built In",
+        tooltip: "Is the project reflecting on how it works, not just what it produces?",
+        redFlag: "If reflection happens in month 48 only, you're in trouble.",
+        options: [
+          "1 – Post-mortem only.",
+          "3 – Occasional rushed reviews.",
+          "5 – Built into check-ins, documentation, adaptation."
+        ]
+      },
+      {
+        title: "13. Agility Without Chaos",
+        tooltip: "Can the project adapt to new insights smoothly?",
+        redFlag: "If learning is treated as a threat, the project is allergic to growth.",
+        options: [
+          "1 – Rigid plan. Change = panic.",
+          "3 – Flexible but slow and bureaucratic.",
+          "5 – Responsive system. Changes with input."
+        ]
+      },
+      {
+        title: "14. Cultural Translation Happens",
+        tooltip: "Is effort made to translate across disciplines and cultures?",
+        redFlag: "If jargon is used to assert dominance, it’s a wall not a bridge.",
+        options: [
+          "1 – Jargon and acronyms dominate.",
+          "3 – Some attempts for non-experts.",
+          "5 – Ongoing, mutual translation."
+        ]
+      },
+      {
+        title: "15. There’s Room for Meaning",
+        tooltip: "Does the project allow people to connect personally and ethically?",
+        redFlag: "If passion is seen as unprofessional, the project is spiritually dead.",
+        options: [
+          "1 – Just another contract. Values left at login.",
+          "3 – Some openness, but no real space.",
+          "5 – Personal and ethical connection is welcomed."
+        ]
+      }
+    ];
+
+    const form = document.getElementById("quiz-form");
+    questions.forEach((q, index) => {
+      let optionsHtml = q.options.map((opt, idx) => {
+        const val = [1, 3, 5][idx];
+        return `<label><input type="radio" name="q${index}" value="${val}" required /> ${opt}</label>`;
+      }).join("<br/>");
+      form.innerHTML += `
+        <div class="question">
+          <label><strong>${q.title}</strong> <span class="tooltip" title="${q.tooltip}">[?]</span></label><br/>
+          <small style="color: darkred">Red Flag: ${q.redFlag}</small><br/><br/>
+          <div class="score-options">
+            ${optionsHtml}
+          </div>
+        </div>
+      `;
+    });
+
+    function calculateScore() {
+      const formData = new FormData(form);
+      let score = 0;
+      for (let [_, value] of formData.entries()) {
+        score += parseInt(value);
+      }
+      let verdict = "";
+      if (score >= 61) {
+        verdict = "✨ Gluon Goldmine ✨ — This is rare, radical, system-changing work. Proceed.";
+      } else if (score >= 45) {
+        verdict = "🚫 Strong Potential — Worth it if you can shape the edges. Proceed with open eyes.";
+      } else if (score >= 30) {
+        verdict = "⛈️ Decorative Integration — You're being used. Decide if the learning is worth the cost.";
+      } else {
+        verdict = "🏛️ Bullshit Job Confirmed — Get your snacks, collect your invoices, and save your soul elsewhere.";
+      }
+      document.getElementById("result").textContent = `Total Score: ${score} — ${verdict}`;
+    }
+  </script>
+</body>
+</html>
